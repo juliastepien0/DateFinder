@@ -1,31 +1,10 @@
 import kivy
-from kivy.lang import Builder
 from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.uix.button import Button
-from kivy.uix.textinput import TextInput
 from data_layer.database import Database
-from data_layer.models import User, UserProfile, Match, Message
-
-#kv = Builder.load_file("my.kv")
-
-def main():
-    """"
-    #połączenie
-    db = Database('localhost', 'root', 'password', 'DateFinder')
-
-    user_model = User(db)
-    user_model.create_user("test@gmail.com", "123")
-
-    profile_model = UserProfile(db)
-    user = user_model.get_user_by_email("test@gmail.com")
-    print(user)
-    profile_model.create_profile(user['user_id'], "John Doe", '18', 'Male', 'hihihi', 'Szczecin')
-    db.close()
-    """
+from data_layer.models import User, UserProfile
 
 class DateFinder(App):
     def build(self):
@@ -36,9 +15,38 @@ class DateFinder(App):
         self.window.pos_hint = {"center_x": 0.5, "center_y": 0.5}
         self.window.add_widget(Image(source=self.icon))
 
-        #return kv
+        # Tworzenie i konfiguracja połączenia z bazą danych
+        self.db = Database('localhost', 'root', '', 'DateFinder')
+        self.user_model = User(self.db)
+        self.profile_model = UserProfile(self.db)
+
+        # Przykładowe operacje na bazie danych
+        self.user_model.create_user("test@gmail.com", "123")
+        user = self.user_model.get_user_by_email("test@gmail.com")
+        print(user)
+        self.profile_model.create_profile(user['user_id'], "John Doe", 18, "Male", "hihihi", "Szczecin")
+
+        # Dodawanie przycisku, aby pokazać, że Kivy działa
+        self.button = Button(
+            text="Click Me",
+            size_hint=(1, 0.5),
+            bold=True,
+            background_color='#00FFCE',
+            background_normal=""
+        )
+        self.button.bind(on_press=self.button_pressed)
+        self.window.add_widget(self.button)
+
+        return self.window
+
+    def button_pressed(self, instance):
+        user = self.user_model.get_user_by_email("test@gmail.com")
+        print("Button clicked! User data:", user)
+
+    def on_stop(self):
+        # Zamknięcie połączenia z bazą danych przy zamykaniu aplikacji
+        self.db.close()
 
 if __name__ == "__main__":
-    #main()
     app = DateFinder()
     app.run()
