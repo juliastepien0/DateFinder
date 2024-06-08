@@ -24,6 +24,11 @@ class User:
         query = "DELETE FROM Users WHERE user_id = %s"
         self.db.execute_query(query, (user_id,))
 
+    #logowanie
+    def login_user(self, email, password):
+        query = "SELECT * FROM Users WHERE email = %s AND user_password = %s"
+        return self.db.fetchone(query, (email, password))
+
 class UserProfile:
     def __init__(self, db: Database):
         self.db = db
