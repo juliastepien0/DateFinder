@@ -15,6 +15,8 @@ WindowManager:
         name: "signup"
     LogDataWindow:
         name: "logdata"
+    CreateProfileWindow:
+        name: "create_profile"
 
 <WelcomeWindow>:
     MDFloatLayout:
@@ -82,7 +84,7 @@ WindowManager:
                     on_release: app.root.current = 'login'
 
 <LoginWindow>:
-    email: email
+    identifier: identifier
     pwd: pwd
     MDBoxLayout:
         orientation: 'vertical'
@@ -95,9 +97,9 @@ WindowManager:
             halign: 'center'
             bold: True
         MDTextField:
-            id: email
-            hint_text: "Email"
-            icon_right: "email"
+            id: identifier
+            hint_text: "Email or Login"
+            icon_right: "account"
             size_hint_y: None
             height: 40
             pos_hint: {"center_x": 0.5}
@@ -127,9 +129,9 @@ WindowManager:
                 root.manager.transition.direction = "right"
 
 <SignupWindow>:
-    name2: name2
     email: email
     pwd: pwd
+    login: login
     MDBoxLayout:
         orientation: 'vertical'
         padding: 20
@@ -140,13 +142,6 @@ WindowManager:
             theme_text_color: "Primary"
             halign: 'center'
             bold: True
-        MDTextField:
-            id: name2
-            hint_text: "Name"
-            icon_right: "account"
-            size_hint_y: None
-            height: 40
-            pos_hint: {"center_x": 0.5}
         MDTextField:
             id: email
             hint_text: "Email"
@@ -159,6 +154,13 @@ WindowManager:
             hint_text: "Password"
             icon_right: "lock"
             password: True
+            size_hint_y: None
+            height: 40
+            pos_hint: {"center_x": 0.5}
+        MDTextField:
+            id: login
+            hint_text: "Login"
+            icon_right: "account"
             size_hint_y: None
             height: 40
             pos_hint: {"center_x": 0.5}
@@ -181,6 +183,7 @@ WindowManager:
 
 <LogDataWindow>:
     info: info
+    profile_picture: profile_picture
     MDBoxLayout:
         orientation: 'vertical'
         padding: 20
@@ -192,6 +195,12 @@ WindowManager:
             theme_text_color: "Primary"
             halign: 'center'
             bold: True
+        Image:
+            id: profile_picture
+            source: ''  # Initial empty source
+            size_hint_y: None
+            height: 150
+            pos_hint: {"center_x": 0.5}
         MDRaisedButton:
             text: "Back to Home"
             size_hint_y: None
@@ -208,3 +217,6 @@ WindowManager:
             on_release:
                 app.root.current = 'signup'
                 root.manager.transition.direction = "down"
+
+
+
