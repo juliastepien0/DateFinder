@@ -1,0 +1,210 @@
+#:import MDLabel kivymd.uix.label.MDLabel
+#:import MDTextField kivymd.uix.textfield.MDTextField
+#:import MDRaisedButton kivymd.uix.button.MDRaisedButton
+#:import MDFlatButton kivymd.uix.button.MDFlatButton
+#:import MDBoxLayout kivymd.uix.boxlayout.MDBoxLayout
+#:import MDFloatLayout kivymd.uix.floatlayout.MDFloatLayout
+#:import MDRectangleFlatButton kivymd.uix.button.MDRectangleFlatButton
+
+WindowManager:
+    WelcomeWindow:
+        name: "welcome"
+    LoginWindow:
+        name: "login"
+    SignupWindow:
+        name: "signup"
+    LogDataWindow:
+        name: "logdata"
+
+<WelcomeWindow>:
+    MDFloatLayout:
+        Image:
+            source: 'BackGroundWelcomeScreen.jpg'
+            allow_stretch: True
+            keep_ratio: False
+            size_hint: 1, 1
+        MDBoxLayout:
+            orientation: 'vertical'
+            padding: dp(20)
+            spacing: dp(20)
+            size_hint: None, None
+            size: dp(350), dp(600)
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            md_bg_color: [1, 1, 1, 0.8]
+            radius: [20, 20, 20, 20]
+            MDBoxLayout:
+                orientation: 'vertical'
+                size_hint_y: None
+                height: dp(250)
+                spacing: dp(20)
+                Image:
+                    source: 'main_icon.png'
+                    size_hint: None, None
+                    size: dp(200), dp(200)
+                    pos_hint: {'center_x': 0.5}
+                MDLabel:
+                    text: "DateFinder"
+                    halign: "center"
+                    font_name: 'fonts/YourCustomFont.otf'
+                    font_size: "60sp"
+                    bold: True
+                    size_hint_y: None
+                    height: self.texture_size[1]
+            MDBoxLayout:
+                orientation: 'vertical'
+                spacing: dp(20)
+                size_hint_y: None
+                height: dp(200)
+                pos_hint: {'center_y': 0.5}
+                MDRectangleFlatButton:
+                    text: 'Create Account'
+                    pos_hint: {"center_x": 0.5}
+                    size_hint_x: None
+                    width: dp(300)
+                    height: dp(60)
+                    radius: [50]
+                    font_size: "24sp"
+                    elevation: 0
+                    text_color: "white"
+                    line_color: None
+                    md_bg_color: [35/255, 118/255, 93/255, 1]
+                    on_release: app.root.current = 'signup'
+                MDRaisedButton:
+                    text: 'Log In'
+                    halign: "center"
+                    pos_hint: {"center_x": 0.5}
+                    size_hint_x: None
+                    width: dp(300)
+                    height: dp(60)
+                    font_size: '24sp'
+                    text_color: "white"
+                    md_bg_color: [35/255, 118/255, 93/255, 1]
+                    on_release: app.root.current = 'login'
+
+<LoginWindow>:
+    email: email
+    pwd: pwd
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 20
+        MDLabel:
+            text: "Login"
+            font_style: 'H4'
+            theme_text_color: "Primary"
+            halign: 'center'
+            bold: True
+        MDTextField:
+            id: email
+            hint_text: "Email"
+            icon_right: "email"
+            size_hint_y: None
+            height: 40
+            pos_hint: {"center_x": 0.5}
+        MDTextField:
+            id: pwd
+            hint_text: "Password"
+            icon_right: "lock"
+            password: True
+            size_hint_y: None
+            height: 40
+            pos_hint: {"center_x": 0.5}
+        MDRaisedButton:
+            text: "LOGIN"
+            size_hint_y: None
+            height: 50
+            pos_hint: {"center_x": 0.5}
+            on_release:
+                root.validate()
+                root.manager.transition.direction = "up"
+        MDFlatButton:
+            text: "Back to Home"
+            size_hint_y: None
+            height: 50
+            pos_hint: {"center_x": 0.5}
+            on_release:
+                app.root.current = 'welcome'
+                root.manager.transition.direction = "right"
+
+<SignupWindow>:
+    name2: name2
+    email: email
+    pwd: pwd
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 20
+        MDLabel:
+            text: "Signup"
+            font_style: 'H4'
+            theme_text_color: "Primary"
+            halign: 'center'
+            bold: True
+        MDTextField:
+            id: name2
+            hint_text: "Name"
+            icon_right: "account"
+            size_hint_y: None
+            height: 40
+            pos_hint: {"center_x": 0.5}
+        MDTextField:
+            id: email
+            hint_text: "Email"
+            icon_right: "email"
+            size_hint_y: None
+            height: 40
+            pos_hint: {"center_x": 0.5}
+        MDTextField:
+            id: pwd
+            hint_text: "Password"
+            icon_right: "lock"
+            password: True
+            size_hint_y: None
+            height: 40
+            pos_hint: {"center_x": 0.5}
+        MDRaisedButton:
+            text: "SUBMIT"
+            size_hint_y: None
+            height: 50
+            pos_hint: {"center_x": 0.5}
+            on_release:
+                root.signupbtn()
+                root.manager.transition.direction = "right"
+        MDFlatButton:
+            text: "Back to Home"
+            size_hint_y: None
+            height: 50
+            pos_hint: {"center_x": 0.5}
+            on_release:
+                app.root.current = 'welcome'
+                root.manager.transition.direction = "left"
+
+<LogDataWindow>:
+    info: info
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: 20
+        spacing: 20
+        MDLabel:
+            id: info
+            text: "SUCCESSFULLY LOGGED IN"
+            font_style: 'H4'
+            theme_text_color: "Primary"
+            halign: 'center'
+            bold: True
+        MDRaisedButton:
+            text: "Back to Home"
+            size_hint_y: None
+            height: 50
+            pos_hint: {"center_x": 0.5}
+            on_release:
+                app.root.current = 'welcome'
+                root.manager.transition.direction = "down"
+        MDFlatButton:
+            text: "Create new account"
+            size_hint_y: None
+            height: 50
+            pos_hint: {"center_x": 0.5}
+            on_release:
+                app.root.current = 'signup'
+                root.manager.transition.direction = "down"

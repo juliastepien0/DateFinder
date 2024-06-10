@@ -5,14 +5,14 @@ class Database:
     def __init__(self, host, user, password, database):
         try:
             self.connection = mysql.connector.connect(
-                host = host,
-                user = user,
-                password = password,
-                database = database
+                host=host,
+                user=user,
+                password=password,
+                database=database
             )
             if self.connection.is_connected():
                 print("Successfully connected to the database")
-            self.cursor = self.connection.cursor(dictionary=True)
+                self.cursor = self.connection.cursor(dictionary=True)
         except Error as e:
             print("Error while connecting to MySQL: ", e)
 
@@ -20,26 +20,38 @@ class Database:
         try:
             self.cursor.execute(query, params)
             self.connection.commit()
+            while self.cursor.nextset():
+                pass
         except Error as e:
             print("Error occurred: ", e)
+            print("Query: ", query)
+            print("Params: ", params)
 
     def fetchall(self, query, params=None):
         try:
             self.cursor.execute(query, params)
-            return self.cursor.fetchall()
+            results = self.cursor.fetchall()
+            # Ensure all results are read
+            while self.cursor.nextset():
+                pass
+            return results
         except Error as e:
             print("Error occurred: ", e)
 
     def fetchone(self, query, params=None):
         try:
             self.cursor.execute(query, params)
-            return self.cursor.fetchone()
+            result = self.cursor.fetchone()
+            while self.cursor.nextset():
+                pass
+            return result
         except Error as e:
             print("Error occurred: ", e)
 
     def close(self):
         if self.connection.is_connected():
+            while self.cursor.nextset():
+                pass
             self.cursor.close()
             self.connection.close()
             print("MySQL connection is closed")
-

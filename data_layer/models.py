@@ -4,15 +4,15 @@ class User:
     def __init__(self, db: Database):
         self.db = db
 
-    def create_user(self,email,password):
+    def create_user(self, email, password):
         query = "INSERT INTO Users (email, user_password) VALUES (%s, %s)"
         self.db.execute_query(query, (email, password))
 
     def get_user_by_id(self, user_id):
         query = "SELECT * FROM Users WHERE user_id = %s"
-        return self.db.fetchone(query, (user_id))
+        return self.db.fetchone(query, (user_id,))
 
-    def get_user_by_email(self,email):
+    def get_user_by_email(self, email):
         query = "SELECT * FROM Users WHERE email = %s"
         return self.db.fetchone(query, (email,))
 
@@ -24,13 +24,18 @@ class User:
         query = "DELETE FROM Users WHERE user_id = %s"
         self.db.execute_query(query, (user_id,))
 
+    #logowanie
+    def login_user(self, email, password):
+        query = "SELECT * FROM Users WHERE email = %s AND user_password = %s"
+        return self.db.fetchone(query, (email, password))
+
 class UserProfile:
     def __init__(self, db: Database):
         self.db = db
 
     def create_profile(self, user_id, name, age, gender, bio, location):
         query = """INSERT INTO User_profiles (user_id, user_name, age, gender, bio, location)
-                       VALUES (%s, %s, %s, %s, %s, %s)"""
+                   VALUES (%s, %s, %s, %s, %s, %s)"""
         self.db.execute_query(query, (user_id, name, age, gender, bio, location))
 
     def get_profile_by_id(self, profile_id):
@@ -43,12 +48,16 @@ class UserProfile:
 
     def update_profile(self, profile_id, name=None, age=None, gender=None, bio=None, location=None):
         query = """UPDATE User_profiles SET user_name = %s, age = %s, gender = %s, bio = %s, location = %s 
-                       WHERE profile_id = %s"""
+                   WHERE profile_id = %s"""
         self.db.execute_query(query, (name, age, gender, bio, location, profile_id))
 
     def delete_profile(self, profile_id):
         query = "DELETE FROM Profiles WHERE profile_id = %s"
         self.db.execute_query(query, (profile_id,))
+
+    def delete_profile_by_user_id(self, user_id):
+        query = "DELETE FROM User_profiles WHERE user_id = %s"
+        self.db.execute_query(query, (user_id,))
 
 class Photo:
     def __init__(self, db: Database):
@@ -74,7 +83,6 @@ class Preference:
     def get_preference_by_user_id(self, user_id):
         query = "SELECT * FROM Preferences WHERE user_id = %s"
         return self.db.fetchone(query, (user_id,))
-
 
 class Interaction:
     def __init__(self, db: Database):
