@@ -1,22 +1,30 @@
-Funkcjonalności:
-
 1.  Rejestracji oraz logowania:
-    praktycznie gotowe (?)
+    -dodać komunikat przy rejestracji istniejacym mailem, że już istnieje konto
+    - przy złym logowaniu komunikat, że konto nie istnieje lub źle wprowadzono dane
+    -
+2. Tworzenie profilu
+    -obsługa nieprawidłowych danych i błędów
+    -jeżeli starczy czasu, to poprawić front
+    ...
 
-2. Edycja profilu
+
+3. Edycja profilu
+    - tutaj dodać subskrypcje i info o statusie konta
+    ...
+
+
+4. Wyszukiwanie automatycznie pasujacych osob
     - uzupełnić bazę danych
     ...
 
-3. Wyszukiwanie automatycznie pasujacych osob
+5. Przeglądanie osób ręcznie
     - uzupełnić bazę danych
     ...
 
-4. Przeglądanie osób ręcznie
+6. Likowanie profilów, które nam pasują
     - uzupełnić bazę danych
     ...
 
-5. Likowanie profilów, które nam pasują
+7. Kalendarz spotkań - dodawanie/przeglądanie
     - uzupełnić bazę danych
-
-6. Kalendarz spotkań - dodawanie/przeglądanie
-    - uzupełnić bazę danych
+    ...

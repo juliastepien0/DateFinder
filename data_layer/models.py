@@ -4,9 +4,9 @@ class User:
     def __init__(self, db: Database):
         self.db = db
 
-    def create_user(self, email, password):
-        query = "INSERT INTO Users (email, user_password) VALUES (%s, %s)"
-        self.db.execute_query(query, (email, password))
+    def create_user(self, email, password, login):
+        query = "INSERT INTO Users (email, user_password, login) VALUES (%s, %s, %s)"
+        self.db.execute_query(query, (email, password, login))
 
     def get_user_by_id(self, user_id):
         query = "SELECT * FROM Users WHERE user_id = %s"
@@ -25,34 +25,41 @@ class User:
         self.db.execute_query(query, (user_id,))
 
     #logowanie
-    def login_user(self, email, password):
-        query = "SELECT * FROM Users WHERE email = %s AND user_password = %s"
-        return self.db.fetchone(query, (email, password))
+    def login_user(self, identifier, password):
+        query = "SELECT * FROM Users WHERE (email = %s OR login = %s) AND user_password = %s"
+        params = (identifier, identifier, password)
+        result = self.db.fetchone(query, params)
+        return result
 
 class UserProfile:
     def __init__(self, db: Database):
         self.db = db
 
-    def create_profile(self, user_id, name, age, gender, bio, location):
-        query = """INSERT INTO User_profiles (user_id, user_name, age, gender, bio, location)
-                   VALUES (%s, %s, %s, %s, %s, %s)"""
-        self.db.execute_query(query, (user_id, name, age, gender, bio, location))
+    def create_profile(self, user_id, name, age, gender, bio, location, profile_picture_url=None, interests=None):
+        query = """INSERT INTO User_profiles (user_id, name, age, gender, bio, location, profile_picture_url, interests)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
+        self.db.execute_query(query, (user_id, name, age, gender, bio, location, profile_picture_url, interests))
 
     def get_profile_by_id(self, profile_id):
         query = "SELECT * FROM User_profiles WHERE profile_id = %s"
         return self.db.fetchone(query, (profile_id,))
 
+    def get_profile_by_user_id(self, user_id):
+        query = "SELECT * FROM User_profiles WHERE user_id = %s"
+        return self.db.fetchone(query, (user_id,))
+
     def get_profiles(self):
         query = "SELECT * FROM User_profiles"
         return self.db.fetchall(query)
 
-    def update_profile(self, profile_id, name=None, age=None, gender=None, bio=None, location=None):
-        query = """UPDATE User_profiles SET user_name = %s, age = %s, gender = %s, bio = %s, location = %s 
-                   WHERE profile_id = %s"""
-        self.db.execute_query(query, (name, age, gender, bio, location, profile_id))
+    def update_profile(self, profile_id, name=None, age=None, gender=None, bio=None, location=None,
+                       profile_picture_url=None, interests=None):
+        query = """UPDATE User_profiles SET name = %s, age = %s, gender = %s, bio = %s, location = %s, profile_picture_url = %s, interests = %s
+                      WHERE profile_id = %s"""
+        self.db.execute_query(query, (name, age, gender, bio, location, profile_picture_url, interests, profile_id))
 
     def delete_profile(self, profile_id):
-        query = "DELETE FROM Profiles WHERE profile_id = %s"
+        query = "DELETE FROM User_profiles WHERE profile_id = %s"
         self.db.execute_query(query, (profile_id,))
 
     def delete_profile_by_user_id(self, user_id):
@@ -71,14 +78,19 @@ class Photo:
         query = "SELECT * FROM Photos WHERE profile_id = %s"
         return self.db.fetchall(query, (profile_id,))
 
+
+
 class Preference:
     def __init__(self, db: Database):
         self.db = db
 
     def set_preference(self, user_id, preferred_gender, preferred_age_min, preferred_age_max, distance_max):
-        query = """INSERT INTO Preferences (user_id, preferred_gender, preferred_age_min, preferred_age_max, distance_max)
-                   VALUES (%s, %s, %s, %s, %s)"""
+        query = "INSERT INTO preferences (user_id, preferred_gender, preferred_age_min, preferred_age_max, distance_max) VALUES (%s, %s, %s, %s, %s)"
         self.db.execute_query(query, (user_id, preferred_gender, preferred_age_min, preferred_age_max, distance_max))
+
+    def get_preference_by_profile_id(self, profile_id):
+        query = "SELECT * FROM Preferences WHERE profile_id = %s"
+        return self.db.fetchone(query, (profile_id,))
 
     def get_preference_by_user_id(self, user_id):
         query = "SELECT * FROM Preferences WHERE user_id = %s"
