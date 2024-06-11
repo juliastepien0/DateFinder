@@ -1,0 +1,45 @@
+<CardDetailsPopup>:
+    orientation: 'vertical'
+    padding: 20
+    spacing: 20
+
+    MDTextField:
+        id: card_number
+        hint_text: "Card Number"
+        input_filter: lambda text, from_undo: text[:16] if len(text) <= 16 else text[:16]
+        icon_right: "credit-card"
+        size_hint_y: None
+        height: 50
+        pos_hint: {"center_x": 0.5}
+        hint_text_color: 1, 1, 1, 1
+        text_color: 1, 1, 1, 1
+        line_color_focus: 1, 1, 1, 1
+
+    MDTextField:
+        id: expiration_date
+        hint_text: "Expiration Date (MM/YY)"
+        icon_right: "calendar"
+        size_hint_y: None
+        height: 50
+        pos_hint: {"center_x": 0.5}
+        hint_text_color: 1, 1, 1, 1
+        text_color: 1, 1, 1, 1
+        line_color_focus: 1, 1, 1, 1
+
+    MDTextField:
+        id: safety_code
+        hint_text: "CVV"
+        icon_right: "lock"
+        size_hint_y: None
+        height: 50
+        pos_hint: {"center_x": 0.5}
+        hint_text_color: 1, 1, 1, 1
+        text_color: 1, 1, 1, 1
+        line_color_focus: 1, 1, 1, 1
+
+    MDRaisedButton:
+        text: "Submit"
+        size_hint_y: None
+        height: 50
+        pos_hint: {"center_x": 0.5}
+        on_release: root.submit()

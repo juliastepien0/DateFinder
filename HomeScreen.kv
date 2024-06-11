@@ -1,0 +1,53 @@
+<HomeScreen>:
+    name: "home"
+    random_user_picture: root.random_user_picture
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        MDToolbar:
+            title: "DateFinder"
+            left_action_items: [["menu", lambda x: nav_drawer.set_state("toggle")]]
+            elevation: 10
+
+        MDNavigationLayout:
+
+            MDNavigationDrawer:
+                id: nav_drawer
+
+                BoxLayout:
+                    orientation: 'vertical'
+                    padding: 10
+                    spacing: 10
+
+                    ScrollView:
+                        MDList:
+                            OneLineListItem:
+                                text: "Chat"
+                                on_release:
+                                    nav_drawer.set_state("close")
+                                    app.on_chat_click()
+
+                            OneLineListItem:
+                                text: "Calendar"
+                                on_release:
+                                    nav_drawer.set_state("close")
+                                    app.on_calendar_click()
+
+                            OneLineListItem:
+                                text: "Profiles"
+                                on_release:
+                                    nav_drawer.set_state("close")
+                                    app.on_view_profiles_click()
+
+                            OneLineListItem:
+                                text: "Edit Profile"
+                                on_release:
+                                    nav_drawer.set_state("close")
+                                    app.on_edit_profile_click()
+
+                            OneLineListItem:
+                                text: "Log out"
+                                on_release:
+                                    nav_drawer.set_state("close")
+                                    app.on_logout_click()

@@ -1,3 +1,4 @@
+import datetime
 from data_layer.database import Database
 
 class User:
@@ -26,7 +27,6 @@ class User:
         query = "DELETE FROM Users WHERE user_id = %s"
         self.db.execute_query(query, (user_id,))
 
-    #logowanie
     def login_user(self, identifier, password):
         query = "SELECT * FROM Users WHERE (email = %s OR login = %s) AND user_password = %s"
         params = (identifier, identifier, password)
@@ -40,22 +40,24 @@ class UserProfile:
         self.db = db
 
     def create_profile(self, user_id, name, age, gender, bio, location, interests=None):
-        query = """INSERT INTO User_profiles (user_id, user_name, age, gender, bio, location, interests)
+        query = """INSERT INTO User_profiles (user_id, name, age, gender, bio, location, interests)
                    VALUES (%s, %s, %s, %s, %s, %s, %s)"""
         self.db.execute_query(query, (user_id, name, age, gender, bio, location, interests))
 
     def get_profile_by_user_id(self, user_id):
-        query = "SELECT * FROM User_profiles WHERE user_id = %s"
+        query = """SELECT u.*, p.* FROM Users u
+                   JOIN User_profiles p ON u.user_id = p.user_id
+                   WHERE u.user_id = %s"""
         return self.db.fetchone(query, (user_id,))
 
     def get_profiles(self):
         query = "SELECT * FROM User_profiles"
         return self.db.fetchall(query)
 
-    def update_profile(self, profile_id, name=None, age=None, gender=None, bio=None, location=None, interests=None):
+    def update_profile(self, user_id, name=None, age=None, gender=None, bio=None, location=None, interests=None):
         query = """UPDATE User_profiles SET name = %s, age = %s, gender = %s, bio = %s, location = %s, interests = %s
-                      WHERE profile_id = %s"""
-        self.db.execute_query(query, (name, age, gender, bio, location, interests, profile_id))
+                   WHERE user_id = %s"""
+        self.db.execute_query(query, (name, age, gender, bio, location, interests, user_id))
 
     def delete_profile(self, profile_id):
         query = "DELETE FROM User_profiles WHERE profile_id = %s"
@@ -67,11 +69,15 @@ class UserProfile:
 
     def get_random_user(self, excluded_user_ids):
         excluded_ids_str = ','.join(map(str, excluded_user_ids))
-        query = """
+        query = f"""
                 SELECT * FROM user_profiles 
-                WHERE user_id NOT IN ({}) 
-                ORDER BY RAND() LIMIT 1""".format(excluded_ids_str)
+                WHERE user_id NOT IN ({excluded_ids_str}) 
+                ORDER BY RAND() LIMIT 1"""
         return self.db.fetchone(query)
+
+    def update_premium_status(self, user_id, is_premium):
+        query = """UPDATE Users SET is_premium = %s WHERE user_id = %s"""
+        self.db.execute_query(query, (is_premium, user_id))
 
 class Photo:
     def __init__(self, db: Database):
@@ -106,6 +112,11 @@ class Preference:
     def get_preference_by_user_id(self, user_id):
         query = "SELECT * FROM Preferences WHERE user_id = %s"
         return self.db.fetchone(query, (user_id,))
+
+    def update_preference(self, user_id, preferred_gender, preferred_age_min, preferred_age_max, distance_max):
+        query = """UPDATE Preferences SET preferred_gender = %s, preferred_age_min = %s, preferred_age_max = %s, distance_max = %s
+                     WHERE user_id = %s"""
+        self.db.execute_query(query, (preferred_gender, preferred_age_min, preferred_age_max, distance_max, user_id))
 
 class Interaction:
     def __init__(self, db: Database):
@@ -156,9 +167,11 @@ class Subscription:
     def __init__(self, db: Database):
         self.db = db
 
-    def create_subscription(self, user_id, start_date=None, end_date="2999-01-01", subscription_status="inactive"):
+    def create_subscription(self, user_id, start_date=None, end_date="2999-01-01", subscription_status="active"):
+        if start_date is None:
+            start_date = datetime.date.today()
         query = """INSERT INTO Subscriptions (user_id, start_date, end_date, subscription_status)
-                   VALUES (%s, %s, %s, %s)"""
+                     VALUES (%s, %s, %s, %s)"""
         self.db.execute_query(query, (user_id, start_date, end_date, subscription_status))
 
     def get_subscription_by_user_id(self, user_id):
