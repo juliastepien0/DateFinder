@@ -5,6 +5,8 @@ class User:
         self.db = db
 
     def create_user(self, email, password, login):
+        if self.get_user_by_email(email):
+            raise ValueError("User with this email already exists")
         query = "INSERT INTO Users (email, user_password, login) VALUES (%s, %s, %s)"
         self.db.execute_query(query, (email, password, login))
 
@@ -29,20 +31,18 @@ class User:
         query = "SELECT * FROM Users WHERE (email = %s OR login = %s) AND user_password = %s"
         params = (identifier, identifier, password)
         result = self.db.fetchone(query, params)
+        if not result:
+            raise ValueError("Invalid email/login or password")
         return result
 
 class UserProfile:
     def __init__(self, db: Database):
         self.db = db
 
-    def create_profile(self, user_id, name, age, gender, bio, location, profile_picture_url=None, interests=None):
-        query = """INSERT INTO User_profiles (user_id, name, age, gender, bio, location, profile_picture_url, interests)
-                   VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
-        self.db.execute_query(query, (user_id, name, age, gender, bio, location, profile_picture_url, interests))
-
-    def get_profile_by_id(self, profile_id):
-        query = "SELECT * FROM User_profiles WHERE profile_id = %s"
-        return self.db.fetchone(query, (profile_id,))
+    def create_profile(self, user_id, name, age, gender, bio, location, interests=None):
+        query = """INSERT INTO User_profiles (user_id, user_name, age, gender, bio, location, interests)
+                   VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+        self.db.execute_query(query, (user_id, name, age, gender, bio, location, interests))
 
     def get_profile_by_user_id(self, user_id):
         query = "SELECT * FROM User_profiles WHERE user_id = %s"
@@ -52,11 +52,10 @@ class UserProfile:
         query = "SELECT * FROM User_profiles"
         return self.db.fetchall(query)
 
-    def update_profile(self, profile_id, name=None, age=None, gender=None, bio=None, location=None,
-                       profile_picture_url=None, interests=None):
-        query = """UPDATE User_profiles SET name = %s, age = %s, gender = %s, bio = %s, location = %s, profile_picture_url = %s, interests = %s
+    def update_profile(self, profile_id, name=None, age=None, gender=None, bio=None, location=None, interests=None):
+        query = """UPDATE User_profiles SET name = %s, age = %s, gender = %s, bio = %s, location = %s, interests = %s
                       WHERE profile_id = %s"""
-        self.db.execute_query(query, (name, age, gender, bio, location, profile_picture_url, interests, profile_id))
+        self.db.execute_query(query, (name, age, gender, bio, location, interests, profile_id))
 
     def delete_profile(self, profile_id):
         query = "DELETE FROM User_profiles WHERE profile_id = %s"
@@ -66,17 +65,29 @@ class UserProfile:
         query = "DELETE FROM User_profiles WHERE user_id = %s"
         self.db.execute_query(query, (user_id,))
 
+    def get_random_user(self, excluded_user_ids):
+        excluded_ids_str = ','.join(map(str, excluded_user_ids))
+        query = """
+                SELECT * FROM user_profiles 
+                WHERE user_id NOT IN ({}) 
+                ORDER BY RAND() LIMIT 1""".format(excluded_ids_str)
+        return self.db.fetchone(query)
+
 class Photo:
     def __init__(self, db: Database):
         self.db = db
 
-    def add_photo(self, profile_id, url):
-        query = "INSERT INTO Photos (profile_id, url) VALUES (%s, %s)"
-        self.db.execute_query(query, (profile_id, url))
+    def add_photo(self, user_id, photo_url):
+        query = "INSERT INTO photos (user_id, url) VALUES (%s, %s)"
+        self.db.execute_query(query, (user_id, photo_url))
 
-    def get_photos_by_profile_id(self, profile_id):
-        query = "SELECT * FROM Photos WHERE profile_id = %s"
-        return self.db.fetchall(query, (profile_id,))
+    def get_photos_by_user_id(self, user_id):
+        query = "SELECT url FROM photos WHERE user_id = %s"
+        return self.db.fetchall(query, (user_id,))
+
+    def delete_photo(self, user_id, photo_url):
+        query = "DELETE FROM photos WHERE user_id = %s AND url = %s"
+        self.db.execute_query(query, (user_id, photo_url))
 
 
 
@@ -105,9 +116,16 @@ class Interaction:
                    VALUES (%s, %s, %s)"""
         self.db.execute_query(query, (user_id, target_user_id, interaction_type))
 
+    def check_match(self, from_user_id, to_user_id):
+        query = """
+        SELECT * FROM interactions 
+        WHERE user_id = ? AND target_user_id = ? AND interaction_type = 'liked'
+        """
+        return self.db.fetchone(query, (to_user_id, from_user_id))
+
     def get_interactions_for_user(self, user_id):
-        query = "SELECT * FROM Interactions WHERE user_id = %s OR target_user_id = %s"
-        return self.db.fetchall(query, (user_id, user_id))
+        query = "SELECT * FROM Interactions WHERE user_id = %s"
+        return self.db.fetchall(query, (user_id,))
 
 class Match:
     def __init__(self, db: Database):

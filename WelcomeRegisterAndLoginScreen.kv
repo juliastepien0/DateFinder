@@ -5,6 +5,11 @@
 #:import MDBoxLayout kivymd.uix.boxlayout.MDBoxLayout
 #:import MDFloatLayout kivymd.uix.floatlayout.MDFloatLayout
 #:import MDRectangleFlatButton kivymd.uix.button.MDRectangleFlatButton
+#:import MDIconButton kivymd.uix.button.MDIconButton
+#:import MDNavigationDrawer kivymd.uix.navigationdrawer.MDNavigationDrawer
+#:import MDList kivymd.uix.list.MDList
+#:import OneLineListItem kivymd.uix.list.OneLineListItem
+
 
 WindowManager:
     WelcomeWindow:
@@ -17,6 +22,8 @@ WindowManager:
         name: "logdata"
     CreateProfileWindow:
         name: "create_profile"
+    HomeScreen:
+        name: "home"
 
 <WelcomeWindow>:
     MDFloatLayout:
@@ -202,21 +209,43 @@ WindowManager:
             height: 150
             pos_hint: {"center_x": 0.5}
         MDRaisedButton:
-            text: "Back to Home"
+            text: "Let's start!"
+            size_hint_y: None
+            height: 50
+            pos_hint: {"center_x": 0.5}
+            on_release:
+                app.root.current = 'home'
+                root.manager.transition.direction = "down"
+        MDFlatButton:
+            text: "Log out"
             size_hint_y: None
             height: 50
             pos_hint: {"center_x": 0.5}
             on_release:
                 app.root.current = 'welcome'
                 root.manager.transition.direction = "down"
-        MDFlatButton:
-            text: "Create new account"
-            size_hint_y: None
-            height: 50
-            pos_hint: {"center_x": 0.5}
-            on_release:
-                app.root.current = 'signup'
-                root.manager.transition.direction = "down"
 
 
 
+<HomeScreen>:
+    name: "home"
+
+    Image:
+        source: root.random_user_picture
+        allow_stretch: True
+        keep_ratio: True
+        size_hint_y: 0.8
+        pos_hint: {"center_x": 0.5, "top": 0.9}
+
+    BoxLayout:
+        orientation: 'horizontal'
+        size_hint_y: 0.1
+        pos_hint: {"center_x": 0.5, "bottom": 0.1}
+
+        Button:
+            text: 'Swipe Left'
+            on_release: root.swipe_left()
+
+        Button:
+            text: 'Swipe Right'
+            on_release: root.swipe_right()
